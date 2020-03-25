@@ -1,11 +1,11 @@
 version: '2'
 
 networks:
-  backend:
+  bbb-backend-net:
 
 services:
   bbb:
-    build: .
+    image: hub.cybergate.lk/cyberteach/bbb:1.0.0
     privileged: true
     environment:
       - "NAME=${NAME}"
@@ -27,28 +27,6 @@ services:
     security_opt:
       - seccomp:unconfined
     networks:
-      - backend
+      - bbb-backend-net
 
-  mac_proxy:
-      build: mac-vpn/
-      ports:
-          - "127.0.0.1:13194:13194"
-      command: TCP-LISTEN:13194,fork TCP:172.17.0.1:1194
-      restart: always
-      networks:
-        - backend
-
-  mac_openvpn:
-      image: kylemanna/openvpn
-      volumes:
-          - ./mac-vpn:/local
-          - ./mac-vpn/config:/etc/openvpn
-      network_mode: host
-      privileged: true
-      cap_add:
-          - NET_ADMIN
-      environment:
-          dest: docker-for-mac.ovpn
-          DEBUG: '1'
-      command: /local/helpers/run-vpn.sh
-      restart: always
+  
