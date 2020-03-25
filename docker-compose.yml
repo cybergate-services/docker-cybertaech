@@ -38,7 +38,7 @@ services:
       - /run/lock
       - /tmp
     volumes:
-      - ./volumes/certs/:/local/certs/
+      - ./volumes/letsencrypt/configetc/letsencrypt:/local/certs/
       - /var/run/docker.sock:/var/run/docker.sock
       - ./volumes/src/:/home/bbb/src/
     security_opt:
