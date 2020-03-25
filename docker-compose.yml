@@ -2,8 +2,10 @@ version: '2'
 
 networks:
   bbb-backend-net:
+
+services:
   
-letsencrypt:
+  letsencrypt:
     image: linuxserver/letsencrypt
     restart: unless-stopped
     container_name: letsencrypt
@@ -20,9 +22,9 @@ letsencrypt:
     networks:
       - bbb-backend-net 
 
-services:
   bbb:
     image: hub.cybergate.lk/cyberteach/bbb:1.0.0
+    restart: unless-stopped
     privileged: true
     environment:
       - "NAME=${NAME}"
