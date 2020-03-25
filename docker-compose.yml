@@ -2,6 +2,23 @@ version: '2'
 
 networks:
   bbb-backend-net:
+  
+letsencrypt:
+    image: linuxserver/letsencrypt
+    restart: unless-stopped
+    container_name: letsencrypt
+    hostname: letsencrypt
+    ports:
+      - 80:80
+      - 443:443
+    cap_add:
+      - NET_ADMIN
+    volumes:
+      - ./volumes/letsencrypt/config:/config
+    env_file: 
+      - ./.letsencrypt.env
+    networks:
+      - bbb-backend-net 
 
 services:
   bbb:
@@ -21,11 +38,13 @@ services:
       - /run/lock
       - /tmp
     volumes:
-      - ./certs/:/local/certs/
+      - ./volumes/certs/:/local/certs/
       - /var/run/docker.sock:/var/run/docker.sock
-      - ../src/:/home/bbb/src/
+      - ./volumes/src/:/home/bbb/src/
     security_opt:
       - seccomp:unconfined
+    env_file: 
+      - ./.bbb.env
     networks:
       - bbb-backend-net
 
