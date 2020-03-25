@@ -1,5 +1,5 @@
 FROM ubuntu:18.04
-MAINTAINER ffdixon@bigbluebutton.org
+MAINTAINER chinthaka@cybergate.lk
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV container docker
