@@ -52,7 +52,6 @@ RUN gem install --no-ri --no-rdoc absolute_time builder fastimage:2.1.5 fnv java
 RUN apt-get install -y libldns2 liblua5.2-0 libopusenc0 libopusfile0 libspeexdsp1 netcat-openbsd python3-bs4 python3-html5lib python3-icu python3-lxml python3-webencodings gir1.2-freedesktop gir1.2-pango-1.0 libcurl4-openssl-dev libpangoxft-1.0-0 python3-attr python3-cairo
 RUN apt-get install -y nodejs curl
 
-
 # -- Install nginx (in order to enable it - to avoid the "nginx.service is not active" error)
 #RUN apt-get install -y nginx
 RUN systemctl enable nginx
@@ -67,9 +66,6 @@ RUN sed -i 's/bind 127.0.0.1 ::1/bind 127.0.0.1/g' /etc/redis/redis.conf
 RUN sed -i 's/^supervised no/supervised systemd/g' /etc/redis/redis.conf
 RUN mkdir -p /etc/systemd/system/redis-server.service.d
 RUN echo "[Service]\nType=notify" > /etc/systemd/system/redis-server.service.d/override.conf
-
-
-
 
 # Setup for BigBlueButton
 RUN wget http://ubuntu.bigbluebutton.org/repo/bigbluebutton.asc -O- | apt-key add -
