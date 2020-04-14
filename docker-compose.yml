@@ -99,7 +99,7 @@ services:
       - NET_BROADCAST
       - SYS_NICE
       - SYS_RESOURCE
-    environment:b
+    environment:
       - container=docker
     tmpfs:
       - /run
