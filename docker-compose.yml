@@ -117,10 +117,10 @@ services:
       - t1_proxy
     labels:  
       - "traefik.enable=true"
-      - "traefik.backend=bbb"
       - "traefik.docker.network=t1_proxy"
+      - "traefik.one.backend=bbb"
       - "traefik.one.port=8090"
-      - "traefik.one.frontend.rule=${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bigbluebutton"
+      - "traefik.one.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bigbluebutton"
       - "traefik.one.frontend.headers.SSLRedirect=true"
       - "traefik.one.frontend.headers.STSSeconds=315360000"
       - "traefik.one.frontend.headers.browserXSSFilter=true"
@@ -130,6 +130,7 @@ services:
       - "traefik.one.frontend.headers.STSIncludeSubdomains=true"
       - "traefik.one.frontend.headers.STSPreload=true"
       - "traefik.one.frontend.headers.frameDeny=true"
+      - "traefik.two.backend=bbb"
       - "traefik.two.port=3008"
       - "traefik.two.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bb-webrtc-sfu"
       - "traefik.two.frontend.headers.SSLRedirect=true"
