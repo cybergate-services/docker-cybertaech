@@ -1,0 +1,48 @@
+logLevel = "WARN" #DEBUG, INFO, WARN, ERROR, FATAL, PANIC
+defaultEntryPoints = ["http", "https"]
+
+# WEB interface of Traefik - it will show web page with overview of frontend and backend configurations
+
+[entryPoints]
+  # API Access
+  [entryPoints.dashboard]
+    address = ":8080"
+    [entryPoints.dashboard.auth]
+      [entryPoints.dashboard.auth.basic]
+        users = ["admin:your_encrypted_password"]
+  #  Force HTTPS
+  [entryPoints.http]
+    address = ":80"
+    [entryPoints.http.redirect]
+      entryPoint = "https"
+  [entryPoints.https]
+    address = ":443"
+      [entryPoints.https.tls]
+    
+[api]
+  entryPoint = "dashboard"
+
+[file]
+  watch = true
+  filename = "/etc/traefik/rules.toml"
+
+# Let's encrypt configurationEXAMPLE.COM
+[acme]
+email = "amith@cybergate.lk" #any email id will work
+storage="/etc/traefik/acme/acme.json"
+entryPoint = "https"
+acmeLogging=true 
+onDemand = false #create certificate when container is created
+onHostRule = true
+  # Use a HTTP-01 acme challenge rather than TLS-SNI-01 challenge
+  [acme.httpChallenge]
+  entryPoint = "http"
+
+# Connection to docker host system (docker.sock)
+[docker]
+endpoint = "unix:///var/run/docker.sock"
+domain = "cyber.lk"
+watch = true
+# This will hide all docker containers that don't have explicitly  
+# set label to "enable"
+exposedbydefault = false
