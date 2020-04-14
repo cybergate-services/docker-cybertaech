@@ -1,27 +1,87 @@
-version: '2'
-
-networks:
-  bbb-backend-net:
+version: '3'
 
 services:
-  
-  letsencrypt:
-    image: linuxserver/letsencrypt
-    restart: unless-stopped
-    container_name: letsencrypt
-    hostname: letsencrypt
-    ports:
-      - 80:80
-      - 443:443
-    cap_add:
-      - NET_ADMIN
-    volumes:
-      - ./volumes/letsencrypt/config:/config
-    env_file: 
-      - ./.letsencrypt.env
+  traefik:
+    hostname: traefik
+    image: traefik:v1.7.16
+    container_name: traefik
+    restart: always
+    domainname: ${DOMAINNAME}
     networks:
-      - bbb-backend-net 
+      - default
+      - t1_proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      - CF_API_EMAIL=${CF_API_EMAIL}
+      - CF_API_KEY=${CF_API_KEY}
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=traefik"
+      - "traefik.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}"
+      - "traefik.port=8080"
+      - "traefik.docker.network=t1_proxy"
+      - "traefik.frontend.headers.SSLRedirect=true"
+      - "traefik.frontend.headers.STSSeconds=315360000"
+      - "traefik.frontend.headers.browserXSSFilter=true"
+      - "traefik.frontend.headers.contentTypeNosniff=true"
+      - "traefik.frontend.headers.forceSTSHeader=true"
+      - "traefik.frontend.headers.SSLHost=${HOSTNAME}.${DOMAINNAME}"
+      - "traefik.frontend.headers.STSIncludeSubdomains=true"
+      - "traefik.frontend.headers.STSPreload=true"
+      - "traefik.frontend.headers.customFrameOptionsValue: allow-from https:${HOSTNAME}.${DOMAINNAME}"
+#      - "traefik.frontend.auth.basic.users=${HTTP_USERNAME}:${HTTP_PASSWORD}"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik:/etc/traefik
+      - ./shared:/shared
 
+  db:
+    image: postgres:9.5
+    container_name: db
+    restart: always
+    ports:
+      - 127.0.0.1:5432:5432
+    volumes:
+      - greenlight_db:/var/lib/postgresql/data
+    networks:
+      - default
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+    networks: 
+      - default  
+      
+  classroom:
+    entrypoint: [bin/start]
+    image: hub.cybergate.lk/cyberteach/classroom:2.2.0
+    container_name: classroom
+    restart: always
+    volumes:
+      - greenlight_logs:/usr/src/app/log
+    env_file: ./.env   
+    networks:
+      - t1_proxy
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=classroom"
+      - "traefik.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefix: /classroom"
+      - "traefik.port=80"
+      - "traefik.docker.network=t1_proxy" 
+      - "traefik.frontend.headers.SSLRedirect=true"
+      - "traefik.frontend.headers.STSSeconds=315360000"
+      - "traefik.frontend.headers.browserXSSFilter=true"
+      - "traefik.frontend.headers.contentTypeNosniff=true"
+      - "traefik.frontend.headers.forceSTSHeader=true"
+      - "traefik.frontend.headers.SSLHost=${HOSTNAME}.${DOMAINNAME}"
+      - "traefik.frontend.headers.STSIncludeSubdomains=true"
+      - "traefik.frontend.headers.STSPreload=true"
+      - "traefik.frontend.headers.customFrameOptionsValue: allow-from https:${HOSTNAME}.${DOMAINNAME}"
+    links:
+      - db
   bbb:
     image: hub.cybergate.lk/cyberteach/bbb:1.0.0
     restart: unless-stopped
@@ -40,14 +100,68 @@ services:
       - /run/lock
       - /tmp
     volumes:
-      - ./volumes/letsencrypt/configetc/letsencrypt:/local/certs/
-      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/run/docker.soc/bbb-webrtc-sfu k:/var/run/docker.sock
       - ./volumes/src/:/home/bbb/src/
     security_opt:
       - seccomp:unconfined
     env_file: 
       - ./.bbb.env
+    networks: 
+      - default
+      - t1-proxy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=bbb"
+      - "traefik.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bigbluebutton,/html5client,/_timesync,/client,/pad,/static,/playback,/playback/presentation,/screenshare,/ws,/verto,/bbb-webrtc-sfu"
+      - "traefik.port=80"
+      - "traefik.docker.network=t1_proxy" 
+      - "traefik.frontend.headers.SSLRedirect=true"
+      - "traefik.frontend.headers.STSSeconds=315360000"
+      - "traefik.frontend.headers.browserXSSFilter=true"
+      - "traefik.frontend.headers.contentTypeNosniff=true"
+      - "traefik.frontend.headers.forceSTSHeader=true"
+      - "traefik.frontend.headers.SSLHost=${HOSTNAME}.${DOMAINNAME}"
+      - "traefik.frontend.headers.STSIncludeSubdomains=true"
+      - "traefik.frontend.headers.STSPreload=true"
+      - "traefik.frontend.headers.customFrameOptionsValue: allow-from https:${HOSTNAME}.${DOMAINNAME}"
+      
+  adminer:
+    image: adminer:4.6.3-standalone
+    container_name: adminer
+    restart: always
     networks:
-      - bbb-backend-net
+      - t1_proxy
+      - default
+    labels:
+      - "traefik.enable=true"
+      - "traefik.backend=adminer"
+      - "traefik.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefix: /dbadmin"
+      - "traefik.port=8080"
+      - "traefik.docker.network=t1_proxy" 
+      - "traefik.frontend.headers.SSLRedirect=true"
+      - "traefik.frontend.headers.STSSeconds=315360000"
+      - "traefik.frontend.headers.browserXSSFilter=true"
+      - "traefik.frontend.headers.contentTypeNosniff=true"
+      - "traefik.frontend.headers.forceSTSHeader=true"
+      - "traefik.frontend.headers.SSLHost=${HOSTNAME}.${DOMAINNAME}"
+      - "traefik.frontend.headers.STSIncludeSubdomains=true"
+      - "traefik.frontend.headers.STSPreload=true"
+      - "traefik.frontend.headers.customFrameOptionsValue: allow-from https:${HOSTNAME}.${DOMAINNAME}"
+    depends_on:
+      - db 
+      
+networks:
+  t1_proxy:
+    external:
+      name: t1_proxy
+  default:
+    driver: bridge
+    
+volumes:
+  traefik-acme:
+  greenlight_db:
+  greenlight_logs:
+
+ 
 
   
