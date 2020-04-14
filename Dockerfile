@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 as base
+FROM ubuntu:18.04
 MAINTAINER chinthaka@cybergate.lk
 
 ENV DEBIAN_FRONTEND noninteractive
@@ -71,22 +71,23 @@ RUN echo "[Service]\nType=notify" > /etc/systemd/system/redis-server.service.d/o
 RUN wget http://ubuntu.bigbluebutton.org/repo/bigbluebutton.asc -O- | apt-key add -
 RUN mkdir -p /etc/nginx/ssl
 RUN openssl dhparam -dsaparam -out /etc/nginx/ssl/dhp-4096.pem 4096
-RUN mkdir /opt/docker-bbb/
-ADD setup.sh /opt/docker-bbb/setup.sh
-RUN chmod 755 /opt/docker-bbb/setup.sh
-
-ADD haveged.service /etc/systemd/system/default.target.wants/haveged.service
-
-ENTRYPOINT ["/bin/systemd", "--system", "--unit=multi-user.target"]
-CMD []
 
 # -- Finish startup
+#    Add a number there to force update of files on build
 
-FROM base as builder
-
+RUN echo "Finishing ........ @15"
+RUN mkdir /opt/docker-bbb/
+#RUN wget https://raw.githubusercontent.com/bigbluebutton/bbb-install/master/bbb-install.sh -O- | sed 's|https://\$PACKAGE_REPOSITORY|http://\$PACKAGE_REPOSITORY|g' > /opt/docker-bbb/bbb-install.sh
 RUN wget https://ubuntu.bigbluebutton.org/bbb-install.sh -O- | sed 's|https://\$PACKAGE_REPOSITORY|http://\$PACKAGE_REPOSITORY|g' > /opt/docker-bbb/bbb-install.sh
 RUN chmod 755 /opt/docker-bbb/bbb-install.sh
-RUN /opt/docker-bbb/setup.sh
+ADD setup.sh /opt/docker-bbb/setup.sh
+RUN chmod 755 /opt/docker-bbb/setup.sh
+ADD rc.local /etc/
+RUN chmod 755 /etc/rc.local
+
+ADD haveged.service /etc/systemd/system/default.target.wants/haveged.service
+ADD rc-local.service  /etc/systemd/system/default.target.wants/rc-local.service
 
 ENTRYPOINT ["/bin/systemd", "--system", "--unit=multi-user.target"]
+# ENTRYPOINT ["/bin/bash"]
 CMD []
