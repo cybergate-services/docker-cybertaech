@@ -105,6 +105,7 @@ services:
       - /run/lock
       - /tmp
     volumes:
+      - /sys/fs/cgroup:/sys/fs/cgroup:ro
       - /var/run/docker.sock:/var/run/docker.sock
       - ./volumes/src/:/home/bbb/src/
     security_opt:
