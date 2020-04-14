@@ -91,4 +91,3 @@ ADD rc-local.service  /etc/systemd/system/default.target.wants/rc-local.service
 ENTRYPOINT ["/bin/systemd", "--system", "--unit=multi-user.target"]
 # ENTRYPOINT ["/bin/bash"]
 CMD []
-
