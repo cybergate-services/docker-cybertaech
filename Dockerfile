@@ -96,7 +96,7 @@ EXPOSE 3008
 EXPOSE 5090
 EXPOSE 5060
 EXPOSE 5066
-
+EXPOSE 8888
 
 ENTRYPOINT ["/bin/systemd", "--system", "--unit=multi-user.target"]
 # ENTRYPOINT ["/bin/bash"]
