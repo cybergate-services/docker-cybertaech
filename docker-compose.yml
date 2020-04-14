@@ -90,6 +90,7 @@ services:
       - "NAME=${HOSTNAME}"
       - "DOMAIN=${DOMAINNAME}"
     hostname: ${HOSTNAME}.${DOMAINNAME}
+    container_name: bbb
     cap_add:
       - NET_ADMIN
       - SYS_ADMIN
