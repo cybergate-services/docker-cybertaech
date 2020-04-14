@@ -31,7 +31,7 @@ echo "bbb:bbb" | chpasswd
 # Allow to have executable files in /tmp/ folder (tomcat JNA)
 mount /tmp -o remount,exec
 
-./bbb-install.sh -d -s "`hostname -f`" -v bionic-230-dev -a
+./bbb-install.sh -d -s "`hostname -f`" -v bionic-230-dev 
 
 exit
 
