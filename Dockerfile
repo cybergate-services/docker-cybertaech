@@ -80,6 +80,7 @@ RUN mkdir /opt/docker-bbb/
 RUN wget https://ubuntu.bigbluebutton.org/bbb-install.sh -O- | sed 's|https://\$PACKAGE_REPOSITORY|http://\$PACKAGE_REPOSITORY|g' > /opt/docker-bbb/bbb-install.sh
 RUN chmod 755 /opt/docker-bbb/bbb-install.sh
 ADD setup.sh /opt/docker-bbb/setup.sh
+RUN chmod 755 /opt/docker-bbb/setup.sh
 ADD rc.local /etc/
 RUN chmod 755 /etc/rc.local
 
