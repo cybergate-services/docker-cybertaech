@@ -84,6 +84,7 @@ ADD rc.local /etc/
 RUN chmod 755 /etc/rc.local
 
 ADD haveged.service /etc/systemd/system/default.target.wants/haveged.service
+ADD rc-local.service  /etc/systemd/system/default.target.wants/rc-local.service
 
 
 ENTRYPOINT ["/bin/systemd", "--system", "--unit=multi-user.target"]
