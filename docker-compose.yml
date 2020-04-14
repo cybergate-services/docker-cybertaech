@@ -99,7 +99,7 @@ services:
       - NET_BROADCAST
       - SYS_NICE
       - SYS_RESOURCE
-    environment:
+    environment:b
       - container=docker
     tmpfs:
       - /run
@@ -121,7 +121,7 @@ services:
       - "traefik.docker.network=t1_proxy"
       - "traefik.one.backend=bbb"
       - "traefik.one.port=8090"
-      - "traefik.one.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bigbluebutton"
+      - "traefik.one.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefix: /bigbluebutton"
       - "traefik.one.frontend.headers.SSLRedirect=true"
       - "traefik.one.frontend.headers.STSSeconds=315360000"
       - "traefik.one.frontend.headers.browserXSSFilter=true"
@@ -133,7 +133,7 @@ services:
       - "traefik.one.frontend.headers.frameDeny=true"
       - "traefik.two.backend=bbb"
       - "traefik.two.port=3008"
-      - "traefik.two.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bb-webrtc-sfu"
+      - "traefik.two.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefix: /bbb-webrtc-sfu"
       - "traefik.two.frontend.headers.SSLRedirect=true"
       - "traefik.two.frontend.headers.STSSeconds=315360000"
       - "traefik.two.frontend.headers.browserXSSFilter=true"
@@ -143,6 +143,31 @@ services:
       - "traefik.two.frontend.headers.STSIncludeSubdomains=true"
       - "traefik.two.frontend.headers.STSPreload=true"
       - "traefik.two.frontend.headers.frameDeny=true"
+      - "traefik.three.backend=bbb"
+      - "traefik.three.port=3000"
+      - "traefik.three.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefix: /html5client,/_timesync"
+      - "traefik.three.frontend.headers.SSLRedirect=true"
+      - "traefik.three.frontend.headers.STSSeconds=315360000"
+      - "traefik.three.frontend.headers.browserXSSFilter=true"
+      - "traefik.three.frontend.headers.contentTypeNosniff=true"
+      - "traefik.three.frontend.headers.forceSTSHeader=true"
+      - "traefik.three.frontend.headers.SSLHost=${HOSTNAME}.${DOMAINNAME}"
+      - "traefik.three.frontend.headers.STSIncludeSubdomains=true"
+      - "traefik.three.frontend.headers.STSPreload=true"
+      - "traefik.three.frontend.headers.frameDeny=true"  
+      - "traefik.four.backend=bbb"
+      - "traefik.four.port=7443"
+      - "traefik.four.wss.protocol=https"
+      - "traefik.four.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefix: /ws"
+      - "traefik.four.frontend.headers.SSLRedirect=true"
+      - "traefik.four.frontend.headers.STSSeconds=315360000"
+      - "traefik.four.frontend.headers.browserXSSFilter=true"
+      - "traefik.four.frontend.headers.contentTypeNosniff=true"
+      - "traefik.four.frontend.headers.forceSTSHeader=true"
+      - "traefik.four.frontend.headers.SSLHost=${HOSTNAME}.${DOMAINNAME}"
+      - "traefik.four.frontend.headers.STSIncludeSubdomains=true"
+      - "traefik.four.frontend.headers.STSPreload=true"
+      - "traefik.four.frontend.headers.frameDeny=true"
       
   adminer:
     image: adminer:4.6.3-standalone
