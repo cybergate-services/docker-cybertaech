@@ -114,7 +114,7 @@ services:
       - ./.env
     networks: 
       - default
-      - t1-proxy
+      - t1_proxy
     labels:
       - "traefik.enable=true"
       - "traefik.backend=bbb"
