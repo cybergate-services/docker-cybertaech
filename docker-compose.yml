@@ -83,7 +83,7 @@ services:
     links:
       - db
   bbb:
-    image: hub.cybergate.lk/cyberteach/bbb:1.0.0
+    image: hub.cybergate.lk/cyberteach/bbb:2.3.0
     restart: unless-stopped
     privileged: true
     environment:
@@ -115,21 +115,33 @@ services:
     networks: 
       - default
       - t1_proxy
-    labels:
-      - "traefik.enable=true"
-      - "traefik.backend=bbb"
-      - "traefik.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bigbluebutton,/html5client,/_timesync,/client,/pad,/static,/playback,/playback/presentation,/screenshare,/ws,/verto,/bbb-webrtc-sfu"
-      - "traefik.port=80"
-      - "traefik.docker.network=t1_proxy" 
-      - "traefik.frontend.headers.SSLRedirect=true"
-      - "traefik.frontend.headers.STSSeconds=315360000"
-      - "traefik.frontend.headers.browserXSSFilter=true"
-      - "traefik.frontend.headers.contentTypeNosniff=true"
-      - "traefik.frontend.headers.forceSTSHeader=true"
-      - "traefik.frontend.headers.SSLHost=${HOSTNAME}.${DOMAINNAME}"
-      - "traefik.frontend.headers.STSIncludeSubdomains=true"
-      - "traefik.frontend.headers.STSPreload=true"
-      - "traefik.frontend.headers.customFrameOptionsValue: allow-from https:${HOSTNAME}.${DOMAINNAME}"
+    labels:       
+      - "traefik.docker.network=t1_proxy"
+      - "traefik.one.port=8090"
+      - "traefik.one.frontend.entryPoints=bigbluebutton"
+      - "traefik.one.frontend.rule=${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bigbluebutton"
+      - "traefik.one.frontend.headers.SSLRedirect=true"
+      - "traefik.one.frontend.headers.STSSeconds=315360000"
+      - "traefik.one.frontend.headers.browserXSSFilter=true"
+      - "traefik.one.frontend.headers.contentTypeNosniff=true"
+      - "traefik.one.frontend.headers.forceSTSHeader=true"
+      - "traefik.one.frontend.headers.SSLHost=${HOSTNAME}.${DOMAINNAME}"
+      - "traefik.one.frontend.headers.STSIncludeSubdomains=true"
+      - "traefik.one.frontend.headers.STSPreload=true"
+      - "traefik.one.frontend.headers.frameDeny=true"
+      - "traefik.docker.network=t1_proxy"
+      - "traefik.two.port=3008"
+      - "traefik.two.frontend.entryPoints=bb-webrtc-sfu"
+      - "traefik.two.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bb-webrtc-sfu"
+      - "traefik.two.frontend.headers.SSLRedirect=true"
+      - "traefik.two.frontend.headers.STSSeconds=315360000"
+      - "traefik.two.frontend.headers.browserXSSFilter=true"
+      - "traefik.two.frontend.headers.contentTypeNosniff=true"
+      - "traefik.two.frontend.headers.forceSTSHeader=true"
+      - "traefik.two.frontend.headers.SSLHost=${HOSTNAME}.${DOMAINNAME}"
+      - "traefik.two.frontend.headers.STSIncludeSubdomains=true"
+      - "traefik.two.frontend.headers.STSPreload=true"
+      - "traefik.two.frontend.headers.frameDeny=true"
       
   adminer:
     image: adminer:4.6.3-standalone
