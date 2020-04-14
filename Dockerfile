@@ -88,6 +88,16 @@ RUN chmod 755 /etc/rc.local
 ADD haveged.service /etc/systemd/system/default.target.wants/haveged.service
 ADD rc-local.service  /etc/systemd/system/default.target.wants/rc-local.service
 
+EXPOSE 7443
+EXPOSE 8021
+EXPOSE 3000
+EXPOSE 8090
+EXPOSE 3008
+EXPOSE 5090
+EXPOSE 5060
+EXPOSE 5066
+
+
 ENTRYPOINT ["/bin/systemd", "--system", "--unit=multi-user.target"]
 # ENTRYPOINT ["/bin/bash"]
 CMD []
