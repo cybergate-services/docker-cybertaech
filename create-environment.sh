@@ -1,6 +1,6 @@
 #!/bin/bash -e
 
-source ./classroom.conf
+source ./cyberteach.conf
 
 cat << EOF > ./.env
 TZ=${TIME_ZONE}
