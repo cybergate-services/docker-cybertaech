@@ -115,7 +115,9 @@ services:
     networks: 
       - default
       - t1_proxy
-    labels:       
+    labels:  
+      - "traefik.enable=true"
+      - "traefik.backend=bbb"
       - "traefik.docker.network=t1_proxy"
       - "traefik.one.port=8090"
       - "traefik.one.frontend.entryPoints=bigbluebutton"
@@ -129,9 +131,8 @@ services:
       - "traefik.one.frontend.headers.STSIncludeSubdomains=true"
       - "traefik.one.frontend.headers.STSPreload=true"
       - "traefik.one.frontend.headers.frameDeny=true"
-      - "traefik.docker.network=t1_proxy"
-      - "traefik.two.port=3008"
       - "traefik.two.frontend.entryPoints=bb-webrtc-sfu"
+      - "traefik.two.port=3008"
       - "traefik.two.frontend.rule=Host:${HOSTNAME}.${DOMAINNAME}; PathPrefixStrip: /bb-webrtc-sfu"
       - "traefik.two.frontend.headers.SSLRedirect=true"
       - "traefik.two.frontend.headers.STSSeconds=315360000"
